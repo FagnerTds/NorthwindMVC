@@ -11,60 +11,106 @@
 <h2>Lista de Produtos</h2>
 
 <form method="get">
-    <select name="filterType" onchange="this.form.submit()">
+    <select id="filterType" name="filterType" onchange="obterFiltro()">
         <option value="">Selecione o Tipo</option>
-        <option value="category" selected = "@(Model.FilterType == "category")"
-            >Categorias
-        </option>
-        <option value="supplier" selected="@(Model.FilterType == "supplier")">
-            Fornecedores
-        </option>
+        <option value="category">Categorias</option>
+        <option value="supplier">Fornecedores</option>
     </select>
 
-    @if(Model.FilterType == "category")
-    {
-        <select name="filterId" onchange="this.form.submit()">
-            <option value="">Selecione a Categoria</option>
-            @foreach(var categoria in Model.Categories){
-                <option value="@categoria.CategoryId" selected="@(Model.FilterId == categoria.CategoryId)">
-                    @categoria.CategoryName
-                </option>
-            }
-        </select>
-    })
-
-    @if (Model.FilterType == "supplier")
-    {
-        <select name="filterId" onchange="this.form.submit()">
-            <option>Seleciono o Fornecedor</option>
-            @foreach(var fornecedor in Model.Supliers)
-            {
-                <option value="@fornecedor.SupplierId" selected="@(Model.FilterId == fornecedor.SupplierId)">
-                    @fornecedor.CompanyName
-                </option>
-            }
-        </select>
-    }
+    <select id="filterId" name="filterId" onchange="resetarFilto()">
+    </select>
 </form>
 
 <table>
     <thead>
         <tr>
-            <th>Produtos</th>
-            <th>Preços</th>
-            <th>Categorias</th>
+            <th>Produto</th>
+            <th>Preço</th>
+            <th>Categoria</th>
             <th>Fornecedor</th>
         </tr>
     </thead>
-    <tbody>
-        @foreach(var products in Model.Products)
-        {
-            <tr>
-                <td>@products.Nome</td>
-                <td>@products.Preco</td>
-                <td>@products.Categoria</td>
-                <td>@products.Fornecedor</td>
-            </tr>
-        }
-    </tbody>
+    <tbody id="productTable"></tbody>
 </table>
+
+<button id="anterior" onclick="mudarPagina(-1)">Anterior</button>
+<span id="paginaAtual">Página 1</span>
+<button id="proximo" onclick="mudarPagina(1)">Próxima</button>
+<span id="totalDePaginas">de 1</span>
+
+<script>
+    function obterFiltro (){
+        const filterType = document.getElementById("filterType").value;
+
+        fetch(`/Home/GetfilterOptions?filterType=${filterType}`)
+        .then(response => response.json())
+        .then(data => {
+
+            const select = document.getElementById("filterId");
+
+            select.innerHTML = '<option value="">Selecione</option>';
+
+            data.forEach(item =>{
+                const option = document.createElement("option");
+                option.value = item.id;
+                option.text = item.nome;
+                select.appendChild(option);
+            });
+        });
+    }
+
+    let paginaAtual = 1;
+    let totalPaginas = 1;
+    function obterProdutos(){
+        const filterType = document.getElementById("filterType").value;
+        const filterId = document.getElementById("filterId").value;
+
+        fetch(`/Home/GetFilteredProducts?filterType=${filterType}&filterId=${filterId}&page=${paginaAtual}`)
+        .then(response => response.json())
+        .then(result => {
+            const produtos = document.getElementById("productTable");
+
+            produtos.innerHTML =""
+
+            result.data.forEach(item =>{
+                const linha = `
+                    <tr>
+                        <td>${item.nome}</td>
+                        <td>${item.preco}</td>
+                        <td>${item.categoria}</td>
+                        <td>${item.fornecedor}</td>
+                    </tr>
+                `
+                produtos.innerHTML += linha;
+
+            });
+            document.getElementById("paginaAtual").innerText = `Pagina ${paginaAtual}`;
+
+            const paginas = document.getElementById("totalDePaginas");
+            totalPaginas = Math.ceil(result.total / 5)
+            paginas.innerText = `de ${totalPaginas}`
+
+            document.getElementById("anterior").disabled = paginaAtual === 1;
+            document.getElementById("proximo").disabled = paginaAtual === totalPaginas;
+        })
+    }    
+
+    function mudarPagina(direcao){
+
+            paginaAtual += direcao;
+
+        if (paginaAtual > totalPaginas) 
+            paginaAtual = totalPaginas
+
+        if(paginaAtual < 1)
+            paginaAtual = 1
+
+        obterProdutos();
+    }
+
+    function resetarFilto(){
+        paginaAtual = 1
+        obterProdutos()
+    }
+</script>
+
