@@ -1,0 +1,66 @@
+﻿@model CreateProductViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<a asp-controller="Home"
+asp-action="Index">
+    Voltar
+</a>
+
+<h1>Create</h1>
+
+<form asp-action="Create" method="post">
+    @* <div asp-validation-summary="All"></div> *@
+    <div>
+        <label>Nome</label>
+        <input asp-for="ProductName" />
+        <span asp-validation-for="ProductName"></span> 
+    </div>
+
+    <div>
+        <label>Preço</label>
+        <input asp-for="UnitPrice" />
+        <span asp-validation-for="UnitPrice"></span>
+
+    </div>
+
+    <div>
+        <label>Categoria</label>
+
+        <select asp-for="CategoryId">
+            <option value="">Selecione</option>
+            <span asp-validation-for="CategoryId"></span>
+
+
+            @foreach(var category in Model.Categories)
+            {
+                <option value="@category.CategoryId">
+                    @category.CategoryName
+                </option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <label>Fornecedor</label>
+        <select asp-for="SupplierId">
+            <option value="">Selecione</option>
+            <span asp-validation-for="SupplierId"></span>
+            @foreach(var fornecedor in Model.Suppliers)
+            {
+                <option value="@fornecedor.SupplierId">
+                    @fornecedor.CompanyName
+                </option>
+            }
+        </select>
+    </div>
+
+    <button type="submit">Salvar</button>
+</form>
+
+@if(ViewBag.Error != null)
+{
+    <p style="color:red">@ViewBag.Error</p>
+}

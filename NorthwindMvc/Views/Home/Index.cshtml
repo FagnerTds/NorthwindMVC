@@ -8,6 +8,12 @@
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
 
+<a asp-controller="Product"
+asp-action="Create"
+class="btn btn-primary">
+    Novo Produto
+</a>
+
 <h2>Lista de Produtos</h2>
 
 <form method="get">
@@ -79,6 +85,11 @@
                         <td>${item.preco}</td>
                         <td>${item.categoria}</td>
                         <td>${item.fornecedor}</td>
+                        <td>
+                            <a href="/Product/Edit/${item.productId}">
+                                Editar
+                            </a>
+                        </td>
                     </tr>
                 `
                 produtos.innerHTML += linha;

@@ -106,6 +106,7 @@ namespace NorthwindMvc.Controllers
                 .Take(pageSize)
                 .Select(p => new
                 {
+                    productId = p.ProductId,
                     nome = p.ProductName,
                     preco = p.UnitPrice,
                     categoria = p.Category.CategoryName,

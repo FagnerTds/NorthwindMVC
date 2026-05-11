@@ -1,0 +1,65 @@
+﻿@model CreateProductViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<a asp-controller="Home"
+   asp-action="Index">
+    Voltar
+</a>
+
+<h1>Editar</h1>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="ProductId" />
+    @* <div asp-validation-summary="All"></div> *@
+    <div>
+        <label>Nome</label>
+        <input asp-for="ProductName" />
+        <span asp-validation-for="ProductName"></span>
+    </div>
+
+    <div>
+        <label>Preço</label>
+        <input asp-for="UnitPrice" />
+        <span asp-validation-for="UnitPrice"></span>
+
+    </div>
+
+    <div>
+        <label>Categoria</label>
+
+        <select asp-for="CategoryId">
+            <option value="">Selecione</option>
+
+
+            @foreach (var category in Model.Categories)
+            {
+                <option value="@category.CategoryId">
+                    @category.CategoryName
+                </option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <label>Fornecedor</label>
+        <select asp-for="SupplierId">
+            <option value="">Fornecedor</option>
+            @foreach (var fornecedor in Model.Suppliers)
+            {
+                <option value="@fornecedor.SupplierId">
+                    @fornecedor.CompanyName
+                </option>
+            }
+        </select>
+    </div>
+
+    <button type="submit">Salvar</button>
+</form>
+
+@if (ViewBag.Error != null)
+{
+    <p style="color:red">@ViewBag.Error</p>
+}
